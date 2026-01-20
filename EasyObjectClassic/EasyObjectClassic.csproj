@@ -2,8 +2,8 @@
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
-		<Version>2026.0120.1931.05</Version>
-		<Nullable>enable</Nullable>
+		<Version>2026.0120.2023.34</Version>
+		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>EasyObjectClassic</RootNamespace>
 		<PlatformTarget>AnyCPU</PlatformTarget>
