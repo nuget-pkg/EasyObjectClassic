@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // ReSharper disable once CheckNamespace
@@ -58,7 +59,7 @@ internal class EasyObjectClassicConverter : IObjectConverterClassic
     }
 }
 
-public class EasyObjectClassic : DynamicObject, IObjectWrapperClassic
+public class EasyObjectClassic : DynamicObject, IObjectWrapperClassic, IExchangeableToObject
 {
 
     public object RealData = null;
@@ -92,6 +93,29 @@ public class EasyObjectClassic : DynamicObject, IObjectWrapperClassic
     // ReSharper disable once MemberCanBePrivate.Global
     public EasyObjectClassic(object x)
     {
+        if (x != null)
+        {
+            if (x is IExchangeableToObject)
+            {
+                x = ((IExchangeableToObject)x).ToPlainObject();
+            }
+            else
+            {
+                try
+                {
+
+                }
+                catch (Exception _)
+                {
+                    Type type = x.GetType();
+                    MethodInfo method = type.GetMethod("ToPlainObject");
+                    if (method != null)
+                    {
+                        x = method.Invoke(x, []);
+                    }
+                }
+            }
+        }
         this.RealData = new ObjectParserClassic(false, new EasyObjectClassicConverter()).Parse(x, true);
     }
 
@@ -100,6 +124,11 @@ public class EasyObjectClassic : DynamicObject, IObjectWrapperClassic
     public override string ToString()
     {
         return this.ToPrintable();
+    }
+
+    public object ToPlainObject()
+    {
+        return this.ToObject();
     }
 
     public string ToPrintable()
