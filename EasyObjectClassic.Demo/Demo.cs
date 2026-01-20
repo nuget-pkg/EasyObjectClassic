@@ -6,6 +6,25 @@ using System.Linq;
 using NUnit.Framework;
 using System.IO;
 
+// ReSharper disable once CheckNamespace
+namespace Demo;
+
+class Exchangeable1: IExchangeableToObject
+{
+    public object ToPlainObject()
+    {
+        return 123;
+    }
+}
+
+class Exchangeable2
+{
+    public object ToPlainObject()
+    {
+        return 456;
+    }
+}
+
 class Program
 {
     static void Main()
@@ -95,5 +114,9 @@ class Program
         Console.WriteLine($"　{ts}");
         Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
         Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
+        var exc1 = new Exchangeable1();
+        Echo(exc1, "exc1");
+        var exc2 = new Exchangeable2();
+        Echo(exc2, "exc2");
     }
 }

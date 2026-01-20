@@ -103,16 +103,16 @@ public class EasyObjectClassic : DynamicObject, IObjectWrapperClassic, IExchange
             {
                 try
                 {
-
-                }
-                catch (Exception _)
-                {
                     Type type = x.GetType();
                     MethodInfo method = type.GetMethod("ToPlainObject");
                     if (method != null)
                     {
                         x = method.Invoke(x, []);
                     }
+                }
+                catch (Exception _)
+                {
+                    ;
                 }
             }
         }
@@ -475,6 +475,7 @@ public class EasyObjectClassic : DynamicObject, IObjectWrapperClassic, IExchange
 
     public static string ToPrintable(object x, string title = null)
     {
+        x = FromObject(x).ToObject();
         return ObjectParserClassic.ToPrintable(ShowDetail, x, title);
     }
 
