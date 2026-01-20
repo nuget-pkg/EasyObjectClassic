@@ -2,8 +2,8 @@
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
-		<Version>2026.0120.1434.27</Version>
-		<Nullable>disable</Nullable>
+		<Version>2026.0120.1931.05</Version>
+		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>EasyObjectClassic</RootNamespace>
 		<PlatformTarget>AnyCPU</PlatformTarget>
@@ -55,7 +55,6 @@
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="IExchangeableToObject" Version="2026.120.1340.29" />
-	  <PackageReference Include="JsoncParserClassic" Version="2026.118.2025.51" />
+	  <PackageReference Include="JsoncParserClassic" Version="2026.120.1853.58" />
 	</ItemGroup>
 </Project>

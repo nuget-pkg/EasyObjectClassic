@@ -9,9 +9,9 @@ using System.IO;
 // ReSharper disable once CheckNamespace
 namespace Demo;
 
-class Exchangeable1: IExchangeableToObject
+class Exchangeable1: IExportToPlainObject
 {
-    public object ToPlainObject()
+    public object ExportToPlainObject()
     {
         return 123;
     }
@@ -19,7 +19,7 @@ class Exchangeable1: IExchangeableToObject
 
 class Exchangeable2
 {
-    public object ToPlainObject()
+    public object ExportToPlainObject()
     {
         return 456;
     }
@@ -99,21 +99,21 @@ class Program
         {
             Echo(e);
         }
-        string bigJson = File.ReadAllText("assets/qiita-9ea0c8fd43b61b01a8da.json");
-        //Echo(bigJson);
-        var sw = new System.Diagnostics.Stopwatch();
-        TimeSpan ts;
-        sw.Start();
-        for (int c = 0; c < 5; c++)
-        {
-            var test = FromJson(bigJson);
-        }
-        sw.Stop();
-        Console.WriteLine("■EasyObjectClassic");
-        ts = sw.Elapsed;
-        Console.WriteLine($"　{ts}");
-        Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
-        Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
+        //string bigJson = File.ReadAllText("assets/qiita-9ea0c8fd43b61b01a8da.json");
+        ////Echo(bigJson);
+        //var sw = new System.Diagnostics.Stopwatch();
+        //TimeSpan ts;
+        //sw.Start();
+        //for (int c = 0; c < 5; c++)
+        //{
+        //    var test = FromJson(bigJson);
+        //}
+        //sw.Stop();
+        //Console.WriteLine("■EasyObjectClassic");
+        //ts = sw.Elapsed;
+        //Console.WriteLine($"　{ts}");
+        //Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
+        //Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
         var exc1 = new Exchangeable1();
         Echo(exc1, "exc1");
         var exc2 = new Exchangeable2();
