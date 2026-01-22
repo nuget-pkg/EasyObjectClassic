@@ -5,6 +5,7 @@ using Global;
 using static Global.EasyObjectClassic;
 using NUnit.Framework;
 
+// ReSharper disable once CheckNamespace
 public class Tests
 {
     [SetUp]
@@ -33,7 +34,7 @@ public class Tests
         Assert.That(eo.ToJson(), Is.EqualTo("""
             "helloハロー©"
             """));
-        EasyObjectClassic.JsonHandler = new CSharpJsonHandlerClassic(true, true); // ForceASCII
+        EasyObjectClassic.ForceAscii = true;
         Assert.That(eo.ToJson(), Is.EqualTo("""
             "hello\u30CF\u30ED\u30FC\u00A9"
             """));
@@ -91,8 +92,9 @@ public class Tests
         Assert.That(eo.TypeValue, Is.EqualTo(@array));
         Assert.That(eo.Count, Is.EqualTo(4));
         Assert.That(eo[0].TypeValue, Is.EqualTo(@null));
+        // ReSharper disable once UnusedVariable
         Assert.That(() => { var n = eo[0].Cast<int>(); },
-            Throws.TypeOf<System.InvalidCastException>()
+            Throws.TypeOf<InvalidCastException>()
             .With.Message.EqualTo("Null オブジェクトを値型に変換することはできません。")
             );
         Assert.That(eo[3].Cast<int>(), Is.EqualTo(777));
@@ -100,13 +102,14 @@ public class Tests
         {
             Echo(e, "e");
         }
-        var eo2 = EasyObjectClassic.FromObject(eo);
+        //var eo2 = EasyObjectClassic.FromObject(eo);
         EasyObjectClassic eo3 = EasyObjectClassic.FromJson("""
             { a: 123, b: [11, 22, 33] }
             """);
         Echo(eo3, "eo3");
         Echo(eo3["b"][1]);
         List<int> list = new List<int>();
+        // ReSharper disable once PossibleInvalidCastException
         foreach (var e in (dynamic)eo3["b"]) list.Add((int)e);
         Echo(list, "list");
         Echo(eo3["b"].TypeName);
@@ -116,6 +119,7 @@ public class Tests
         Echo(eo3);
         var i = FromObject(123);
         Echo(i.Cast<double>());
+        // ReSharper disable once CollectionNeverQueried.Local
         var iList1 = eo3["b"].AsList.Select(x => x.Cast<int>()).ToList();
         Echo(iList1.GetType().FullName);
         var dict = eo3.AsDictionary;

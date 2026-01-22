@@ -25,6 +25,22 @@ class Exchangeable2
     }
 }
 
+class Exchangeable3: IExportToCommonJson
+{
+    public string ExportToCommonJson()
+    {
+        return "[11, 22, 33]";
+    }
+}
+
+class Exchangeable4
+{
+    public string ExportToCommonJson()
+    {
+        return "[111, 222, 333]";
+    }
+}
+
 class Program
 {
     static void Main()
@@ -118,5 +134,9 @@ class Program
         Echo(exc1, "exc1");
         var exc2 = new Exchangeable2();
         Echo(exc2, "exc2");
+        var exc3 = new Exchangeable3();
+        Echo(exc3, "exc3");
+        var exc4 = new Exchangeable4();
+        Echo(exc4, "exc4");
     }
 }

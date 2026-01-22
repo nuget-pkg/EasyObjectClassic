@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 // ReSharper disable once CheckNamespace
@@ -61,19 +60,20 @@ internal class EasyObjectClassicConverter : IConvertParsedResult
 
 public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPlainObject
 {
-    public object RealData = null;
+    public object RealData /*= null*/;
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public static IJsonHandlerClassic DefaultJsonHandler = new CSharpJsonHandlerClassic(numberAsDecimal: true, forceAscii: false);
-    public static IJsonHandlerClassic JsonHandler = null;
+    public static readonly IParseJson DefaultJsonParser = new CSharpJsonHandler(numberAsDecimal: true);
+    public static IParseJson JsonParser /*= null*/;
     // ReSharper disable once MemberCanBePrivate.Global
-    public static bool DebugOutput = false;
-    public static bool ShowDetail = false;
-    public static bool ForceAscii = false;
+    public static bool DebugOutput /*= false*/;
+    public static bool ShowDetail /*= false*/;
+    // ReSharper disable once MemberCanBePrivate.Global
+    public static bool ForceAscii /*= false*/;
 
     public static void ClearSettings()
     {
-        EasyObjectClassic.JsonHandler = DefaultJsonHandler;
+        EasyObjectClassic.JsonParser = DefaultJsonParser;
         EasyObjectClassic.DebugOutput = false;
         EasyObjectClassic.ShowDetail = false;
         EasyObjectClassic.ForceAscii = false;
@@ -92,7 +92,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
     // ReSharper disable once MemberCanBePrivate.Global
     public EasyObjectClassic(object x)
     {
-        this.RealData = new PlainObjectConverter(false, new EasyObjectClassicConverter()).Parse(x, true);
+        this.RealData = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: false, iConvertParsedResult: new EasyObjectClassicConverter()).Parse(x, numberAsDecimal: true);
     }
 
     public dynamic Dynamic { get { return this; } }
@@ -285,7 +285,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
             result = assoc;
         }
         if (dictionary == null) return true;
-        EasyObjectClassic eo = Null;
+        EasyObjectClassic eo /*= Null*/;
         dictionary.TryGetValue(name, out eo);
         result = eo;
         return true;
@@ -333,7 +333,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
             result = Null;
             return true;
         }
-        EasyObjectClassic eo = Null;
+        EasyObjectClassic eo /*= Null*/;
         dictionary.TryGetValue((string)idx, out eo);
         result = eo;
         return true;
@@ -351,7 +351,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
             {
                 RealData = new List<EasyObjectClassic>();
             }
-            while (list.Count < (pos + 1))
+            while (list!.Count < (pos + 1))
             {
                 list.Add(null);
             }
@@ -417,20 +417,21 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
         if (json.StartsWith("#!"))
         {
             string[] lines = TextToLines(json);
-            lines = lines.Skip(1).ToArray(); ;
+            lines = lines.Skip(1).ToArray();
             json = String.Join("\n", lines);
         }
-        return new EasyObjectClassic(JsonHandler.Parse(json));
+        return new EasyObjectClassic(JsonParser.ParseJson(json));
     }
 
     public dynamic ToObject()
     {
-        return new PlainObjectConverter(false).Parse(RealData);
+        return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
     }
 
     public string ToJson(bool indent = false, bool sortKeys = false)
     {
-        return JsonHandler.Stringify(RealData, indent, sortKeys);
+        PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
+        return poc.Stringify(RealData, indent, sortKeys);
     }
 
 #if false
@@ -452,7 +453,8 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
     public static string ToPrintable(object x, string title = null)
     {
         x = FromObject(x).ToObject();
-        return PlainObjectConverter.ToPrintable(ShowDetail, x, title);
+        PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
+        return poc.ToPrintable(ShowDetail, x, title);
     }
 
     public static void Echo(object x, string title = null)
@@ -477,7 +479,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
     public static void Message(object x, string title = null)
     {
         if (title == null) title = "Message";
-        string s = ToPrintable(x, null);
+        string s = ToPrintable(x, title: title);
         NativeMethods.MessageBoxW(IntPtr.Zero, s, title, 0);
     }
 
@@ -515,7 +517,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
                 return TryAssoc(name);
             }
             if (dictionary == null) return Null;
-            EasyObjectClassic eo = null;
+            EasyObjectClassic eo /*= null*/;
             dictionary.TryGetValue(name, out eo);
             return eo;
         }
