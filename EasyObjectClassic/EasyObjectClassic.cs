@@ -452,7 +452,7 @@ public class EasyObjectClassic : DynamicObject, IPlainObjectWrapper, IExportToPl
 
     public static string ToPrintable(object x, string title = null)
     {
-        x = FromObject(x).ToObject();
+        //x = FromObject(x).ToObject();
         PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
         return poc.ToPrintable(ShowDetail, x, title);
     }

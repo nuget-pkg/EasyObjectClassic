@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
-		<Version>2026.0122.1203.46</Version>
+		<Version>2026.0122.1801.14</Version>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>EasyObjectClassic</RootNamespace>
@@ -56,6 +56,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <PackageReference Include="JsoncParser" Version="2026.122.1022.34" />
-	  <PackageReference Include="PlainObjectConverter" Version="2026.122.1111.50" />
+	  <PackageReference Include="PlainObjectConverter" Version="2026.122.1750.45" />
 	</ItemGroup>
 </Project>
