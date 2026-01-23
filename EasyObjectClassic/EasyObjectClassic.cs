@@ -479,7 +479,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     public static void Message(object x, string title = null)
     {
         if (title == null) title = "Message";
-        string s = ToPrintable(x, title: title);
+        string s = ToPrintable(x /*, title: title*/);
         NativeMethods.MessageBoxW(IntPtr.Zero, s, title, 0);
     }
 
