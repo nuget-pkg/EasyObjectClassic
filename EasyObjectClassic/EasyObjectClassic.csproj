@@ -2,11 +2,12 @@
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
-		<Version>2026.0207.1858.34</Version>
-		<Nullable>disable</Nullable>
+		<Version>2026.0207.1914.41</Version>
+		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>EasyObjectClassic</RootNamespace>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<NoWarn></NoWarn>
 		<Authors>JavaCommons</Authors>
 		<Company>JavaCommons Technologies</Company>

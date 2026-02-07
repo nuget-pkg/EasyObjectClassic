@@ -8,6 +8,7 @@
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>EasyObjectClassic.Demo</RootNamespace>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+		<WarningsAsErrors>nullable</WarningsAsErrors>
 		<NoWarn></NoWarn>
 		<Authors>JavaCommons</Authors>
 		<Company>JavaCommons Technologies</Company>

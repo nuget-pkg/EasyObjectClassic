@@ -27,12 +27,12 @@ public enum EasyObjectClassicType
 
 internal class EasyObjectClassicConverter : IConvertParsedResult
 {
-    public object ConvertParsedResult(object x, string origTypeName)
+    public object? ConvertParsedResult(object? x, string origTypeName)
     {
         if (x is Dictionary<string, object>)
         {
             var dict = x as Dictionary<string, object>;
-            var keys = dict.Keys;
+            var keys = dict!.Keys;
             var result = new Dictionary<string, EasyObjectClassic>();
             foreach (var key in keys)
             {
@@ -46,7 +46,7 @@ internal class EasyObjectClassicConverter : IConvertParsedResult
         {
             var list = x as List<object>;
             var result = new List<EasyObjectClassic>();
-            foreach (var e in list)
+            foreach (var e in list!)
             {
                 var eo = new EasyObjectClassic();
                 eo.RealData = e;
@@ -60,11 +60,11 @@ internal class EasyObjectClassicConverter : IConvertParsedResult
 
 public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportToPlainObject
 {
-    public object RealData /*= null*/;
+    public object? RealData /*= null*/;
 
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly IParseJson DefaultJsonParser = new CSharpJsonHandler(numberAsDecimal: true);
-    public static IParseJson JsonParser /*= null*/;
+    public static IParseJson? JsonParser /*= null*/;
     // ReSharper disable once MemberCanBePrivate.Global
     public static bool DebugOutput /*= false*/;
     public static bool ShowDetail /*= false*/;
@@ -90,7 +90,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public EasyObjectClassic(object x)
+    public EasyObjectClassic(object? x)
     {
         this.RealData = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: false, iConvertParsedResult: new EasyObjectClassicConverter()).Parse(x, numberAsDecimal: true);
     }
@@ -102,7 +102,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         return this.ToPrintable();
     }
 
-    public object ToPlainObject()
+    public object? ToPlainObject()
     {
         return this.ToObject();
     }
@@ -131,7 +131,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         EasyObjectClassic result = EmptyObject;
         for (int i = 0; i < args.Length; i += 2)
         {
-            result.Add(args[i].ToString(), FromObject(args[i + 1]));
+            result.Add(args[i].ToString()!, FromObject(args[i + 1]));
         }
         return result;
     }
@@ -154,7 +154,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     public bool IsArray { get { return this.TypeValue == EasyObjectClassicType.@array; } }
     public bool IsNull { get { return this.TypeValue == EasyObjectClassicType.@null; } }
 
-    private static object ExposeInternalObjectHelper(object x)
+    private static object? ExposeInternalObjectHelper(object? x)
     {
         while (x is EasyObjectClassic)
         {
@@ -163,13 +163,13 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         return x;
     }
 
-    private static EasyObjectClassic WrapInternal(object x)
+    private static EasyObjectClassic WrapInternal(object? x)
     {
-        if (x is EasyObjectClassic) return x as EasyObjectClassic;
+        if (x is EasyObjectClassic) return (x as EasyObjectClassic)!;
         return new EasyObjectClassic(x);
     }
 
-    public object ExposeInternalObject()
+    public object? ExposeInternalObject()
     {
         return EasyObjectClassic.ExposeInternalObjectHelper(this);
     }
@@ -178,7 +178,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     {
         get
         {
-            object obj = ExposeInternalObjectHelper(this);
+            object? obj = ExposeInternalObjectHelper(this);
             if (obj == null) return EasyObjectClassicType.@null;
             switch (Type.GetTypeCode(obj.GetType()))
             {
@@ -220,13 +220,13 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     }
 
     // ReSharper disable once InconsistentNaming
-    private List<EasyObjectClassic> list
+    private List<EasyObjectClassic>? list
     {
         get { return RealData as List<EasyObjectClassic>; }
     }
 
     // ReSharper disable once InconsistentNaming
-    private Dictionary<string, EasyObjectClassic> dictionary
+    private Dictionary<string, EasyObjectClassic>? dictionary
     {
         get { return RealData as Dictionary<string, EasyObjectClassic>; }
     }
@@ -261,7 +261,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     public EasyObjectClassic Add(object x)
     {
         if (list == null) RealData = new List<EasyObjectClassic>();
-        EasyObjectClassic eo = x is EasyObjectClassic ? x as EasyObjectClassic : new EasyObjectClassic(x);
+        EasyObjectClassic eo = x is EasyObjectClassic ? (x as EasyObjectClassic)! : new EasyObjectClassic(x);
         list!.Add(eo);
         return this;
     }
@@ -269,7 +269,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     public EasyObjectClassic Add(string key, object x)
     {
         if (dictionary == null) RealData = new Dictionary<string, EasyObjectClassic>();
-        EasyObjectClassic eo = x is EasyObjectClassic ? x as EasyObjectClassic : new EasyObjectClassic(x);
+        EasyObjectClassic eo = x is EasyObjectClassic ? (x as EasyObjectClassic)! : new EasyObjectClassic(x);
         dictionary!.Add(key, eo);
         return this;
     }
@@ -285,14 +285,15 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
             result = assoc;
         }
         if (dictionary == null) return true;
-        EasyObjectClassic eo /*= Null*/;
+        EasyObjectClassic? eo /*= Null*/;
         dictionary.TryGetValue(name, out eo);
+        if (eo == null) eo = Null;
         result = eo;
         return true;
     }
 
     public override bool TrySetMember(
-        SetMemberBinder binder, object value)
+        SetMemberBinder binder, object? value)
     {
         value = ExposeInternalObjectHelper(value);
         if (dictionary == null)
@@ -333,13 +334,14 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
             result = Null;
             return true;
         }
-        EasyObjectClassic eo /*= Null*/;
+        EasyObjectClassic? eo; /*= Null*/;
         dictionary.TryGetValue((string)idx, out eo);
+        if (eo == null) eo = Null;
         result = eo;
         return true;
     }
 
-    public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
+    public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object? value)
     {
         if (value is EasyObjectClassic) value = ((EasyObjectClassic)value).RealData;
         var idx = indexes[0];
@@ -353,7 +355,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
             }
             while (list!.Count < (pos + 1))
             {
-                list.Add(null);
+                list.Add(Null);
             }
             list[pos] = WrapInternal(value);
             return true;
@@ -388,7 +390,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         }
         else
         {
-            result = Convert.ChangeType(RealData, binder.Type);
+            result = Convert.ChangeType(RealData, binder.Type)!;
             return true;
         }
     }
@@ -398,7 +400,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         List<string> lines = new List<string>();
         using (StringReader sr = new StringReader(text))
         {
-            string line;
+            string? line;
             while ((line = sr.ReadLine()) != null)
             {
                 lines.Add(line);
@@ -411,7 +413,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         return new EasyObjectClassic(obj);
     }
 
-    public static EasyObjectClassic FromJson(string json)
+    public static EasyObjectClassic? FromJson(string json)
     {
         if (json == null) return null;
         if (json.StartsWith("#!"))
@@ -420,10 +422,10 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
             lines = lines.Skip(1).ToArray();
             json = String.Join("\n", lines);
         }
-        return new EasyObjectClassic(JsonParser.ParseJson(json));
+        return new EasyObjectClassic(JsonParser!.ParseJson(json));
     }
 
-    public dynamic ToObject()
+    public dynamic? ToObject()
     {
         return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
     }
@@ -450,33 +452,33 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     }
 #endif
 
-    public static string ToPrintable(object x, string title = null)
+    public static string ToPrintable(object x, string? title = null)
     {
         //x = FromObject(x).ToObject();
         PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
         return poc.ToPrintable(ShowDetail, x, title);
     }
 
-    public static void Echo(object x, string title = null)
+    public static void Echo(object x, string? title = null)
     {
         string s = ToPrintable(x, title);
         Console.WriteLine(s);
         System.Diagnostics.Debug.WriteLine(s);
     }
-    public static void Log(object x, string title = null)
+    public static void Log(object x, string? title = null)
     {
         string s = ToPrintable(x, title);
         Console.Error.WriteLine("[Log] " + s);
         System.Diagnostics.Debug.WriteLine("[Log] " + s);
     }
-    public static void Debug(object x, string title = null)
+    public static void Debug(object x, string? title = null)
     {
         if (!DebugOutput) return;
         string s = ToPrintable(x, title);
         Console.Error.WriteLine("[Debug] " + s);
         System.Diagnostics.Debug.WriteLine("[Debug] " + s);
     }
-    public static void Message(object x, string title = null)
+    public static void Message(object x, string? title = null)
     {
         if (title == null) title = "Message";
         string s = ToPrintable(x /*, title: title*/);
@@ -493,10 +495,11 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     {
         try
         {
+            if (list == null) return Null;
             for (int i = 0; i < list.Count; i++)
             {
                 var pair = list[i].AsList;
-                if (pair[0].Cast<string>() == name)
+                if (pair![0].Cast<string>() == name)
                 {
                     return pair[1];
                 }
@@ -517,8 +520,9 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
                 return TryAssoc(name);
             }
             if (dictionary == null) return Null;
-            EasyObjectClassic eo /*= null*/;
+            EasyObjectClassic? eo /*= null*/;
             dictionary.TryGetValue(name, out eo);
+            if (eo == null) eo = Null;
             return eo;
         }
         set
@@ -553,7 +557,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
             }
             while (list!.Count < (pos + 1))
             {
-                list.Add(null);
+                list.Add(Null);
             }
             list[pos] = value;
         }
@@ -562,7 +566,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     {
         if (this.RealData is DateTime dt)
         {
-            string s = null;
+            string? s = null;
             switch (dt.Kind)
             {
                 case DateTimeKind.Local:
@@ -575,11 +579,11 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
                     s = dt.ToString("o").Replace("Z", "");
                     break;
             }
-            return (T)Convert.ChangeType(s, typeof(T));
+            return (T)Convert.ChangeType(s, typeof(T))!;
         }
-        return (T)Convert.ChangeType(this.RealData, typeof(T));
+        return (T)Convert.ChangeType(this.RealData, typeof(T))!;
     }
-    public List<EasyObjectClassic> AsList
+    public List<EasyObjectClassic>? AsList
     {
         get
         {
@@ -587,7 +591,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
             return list;
         }
     }
-    public Dictionary<string, EasyObjectClassic> AsDictionary
+    public Dictionary<string, EasyObjectClassic>? AsDictionary
     {
         get
         {
@@ -599,7 +603,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
     public static string FullName(dynamic x)
     {
         if (x is null) return "null";
-        string fullName = ((object)x).GetType().FullName;
+        string fullName = ((object)x).GetType().FullName!;
         return fullName!.Split('`')[0];
     }
 
@@ -626,7 +630,7 @@ public class EasyObjectClassic : DynamicObject, IExposeInternalObject, IExportTo
         this.RealData = null;
     }
 
-    public object ExportToPlainObject()
+    public object? ExportToPlainObject()
     {
         return this.ToObject();
     }
