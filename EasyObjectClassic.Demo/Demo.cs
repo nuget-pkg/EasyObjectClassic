@@ -1,15 +1,18 @@
 ﻿using Global;
-using static Global.EasyObjectClassic;
+//using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+//using Razorvine.Pickle;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
+using static Global.EasyObjectClassic;
 
 // ReSharper disable once CheckNamespace
 namespace Demo;
 
-class Exchangeable1: IExportToPlainObject
+class Exchangeable1 : IExportToPlainObject
 {
     public object ExportToPlainObject()
     {
@@ -25,7 +28,7 @@ class Exchangeable2
     }
 }
 
-class Exchangeable3: IExportToCommonJson
+class Exchangeable3 : IExportToCommonJson
 {
     public string ExportToCommonJson()
     {
@@ -41,17 +44,69 @@ class Exchangeable4
     }
 }
 
+class MyData : EasyObjectClassic
+{
+    public MyData(int n, string s)
+    {
+        this.ImportFromPlainObject(new { n, s });
+    }
+    public MyData(string json)
+    {
+        this.ImportFromCommonJson(json);
+    }
+    public int N
+    {
+        get
+        {
+            return this.Dynamic.n;
+        }
+    }
+    public string S
+    {
+        get
+        {
+            return this.Dynamic.s;
+        }
+    }
+}
+
 class Program
 {
     static void Main()
     {
         ShowDetail = true;
+        //AllocConsole();
+        Console.WriteLine("(1)");
+        EasyObjectClassic eoNull = Null;
+        Echo(eoNull.ToJson());
+        var poc = new PlainObjectConverter();
+        Echo(poc.Stringify(eoNull, indent: true));
+        Echo(eoNull.ToPrintable());
+        Echo(eoNull);
         Echo(Null);
+        Console.WriteLine("(2)");
         var eo = EasyObjectClassic.FromObject(new { a = 123 });
+        Echo(eo);
+        Console.WriteLine("(3)");
         Echo(eo.TypeValue, "eo.TypeValue");
+        Console.WriteLine("(4)");
         Assert.That(eo.TypeValue, Is.EqualTo(@object));
+        Console.WriteLine("(5)");
+        EasyObjectClassic a = eo["a"];
+        Console.WriteLine("(5.1)");
+        Echo(FullName(a));
+        Echo(a.GetType() == typeof(double));
+        Console.WriteLine("(5.1.1)");
+        //Echo(a.ToObject());
+        Console.WriteLine("(5.1.1.1)");
+        Echo(poc.Stringify(a, true));
+        Console.WriteLine("(5.1.2)");
+        Echo(a, "a");
+        Console.WriteLine("(5.2)");
         Console.WriteLine(eo["a"]);
+        Console.WriteLine("(6)");
         Assert.That(eo["a"].Cast<int>(), Is.EqualTo(123));
+        Console.WriteLine("(7)");
         Assert.That(eo.Keys, Is.EqualTo(new List<string> { "a" }));
         Echo(eo[0], "eo[0]");
         Assert.That(eo[0].TypeValue, Is.EqualTo(@null));
@@ -115,21 +170,72 @@ class Program
         {
             Echo(e);
         }
-        //string bigJson = File.ReadAllText("assets/qiita-9ea0c8fd43b61b01a8da.json");
-        ////Echo(bigJson);
-        //var sw = new System.Diagnostics.Stopwatch();
-        //TimeSpan ts;
-        //sw.Start();
-        //for (int c = 0; c < 5; c++)
-        //{
-        //    var test = FromJson(bigJson);
-        //}
-        //sw.Stop();
-        //Console.WriteLine("■EasyObjectClassic");
-        //ts = sw.Elapsed;
-        //Console.WriteLine($"　{ts}");
-        //Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
-        //Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
+        string bigJson = File.ReadAllText("assets/qiita-9ea0c8fd43b61b01a8da.json");
+        //Echo(bigJson);
+        var sw = new System.Diagnostics.Stopwatch();
+        TimeSpan ts;
+        sw.Start();
+        for (int c = 0; c < 5; c++)
+        {
+            //var test = FromJson(bigJson);
+        }
+        sw.Stop();
+        Console.WriteLine("■EasyObjectClassic");
+        ts = sw.Elapsed;
+        Console.WriteLine($"　{ts}");
+        Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
+        Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
+        sw.Start();
+        for (int c = 0; c < 5; c++)
+        {
+            //JObject jsonObject = JObject.Parse(bigJson);
+        }
+        sw.Stop();
+        Console.WriteLine("■Newtonsoft.Json");
+        ts = sw.Elapsed;
+        Console.WriteLine($"　{ts}");
+        Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
+        Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
+        //var list01_txt = File.ReadAllText("assets/list01.txt");
+        var list01_txt = File.ReadAllText("assets/mydict.txt");
+        Echo(list01_txt);
+        var list01_bytes = Convert.FromBase64String(list01_txt);
+        //var unpickler = new Unpickler();
+        //object result = unpickler.loads(list01_bytes);
+        //Echo(result, "result");
+        //var o = new PlainObjectConverter(forceAscii: false).Parse(result);
+        //Echo(o, "o");
+        //var pickler = new Pickler();
+        //var bytes = pickler.dumps(o);
+        //var ox = unpickler.loads(bytes);
+        //Echo(ox, "ox");
+        //var eo_ox = EasyObjectClassic.FromObject(ox);
+        //Echo(eo_ox, "eo_ox");
+        //Echo(eo_ox.ToJson(true, true), "eo_ox.ToJson(true, true)");
+        Echo(DateTime.Now);
+
+        string progJson = """
+            #! /usr/bin/env program
+            [11, null, "abc"]
+            """;
+        Echo(EasyObjectClassic.FromJson(progJson));
+        Echo(EasyObjectClassic.FromJson(null));
+        var array = EasyObjectClassic.NewArray(1, null, "abc", EasyObjectClassic.FromJson(progJson));
+        Echo(array, "array");
+        var obj = EasyObjectClassic.NewObject("a", 111, "b", EasyObjectClassic.FromJson(progJson));
+        Echo(obj, "obj");
+        // Test newLisp expression
+        EasyObjectClassic assocList = EasyObjectClassic.FromJson("""
+            ( ("a" 123) ("b" true) ("c" false) ("d" nil) )
+            """);
+        Echo(assocList, "assocList");
+        var member = assocList["a"];
+        Echo(member, "member");
+        dynamic assocDyn = assocList;
+        var member2 = assocDyn["a"];
+        Echo(member2, "member2");
+        var member3 = assocDyn.a;
+        Echo(member3, "member3");
         var exc1 = new Exchangeable1();
         Echo(exc1, "exc1");
         var exc2 = new Exchangeable2();
@@ -138,5 +244,70 @@ class Program
         Echo(exc3, "exc3");
         var exc4 = new Exchangeable4();
         Echo(exc4, "exc4");
+        var myData = new MyData(123, "xyz");
+        Echo(myData.N, "myData.N");
+        Echo(myData.S, "myData.S");
+        var myData2 = new MyData("""{n: 456, s: "ABC"}""");
+        Echo(myData2 == null);
+        Echo(myData2.RealData == null);
+        Echo(myData2.N, "myData2.N");
+        Echo(myData2.S, "myData2.S");
+        Echo(myData.ExportToCommonJson(), "myData.ExportToCommonJson()");
+        Echo(myData2.ExportToCommonJson(), "myData2.ExportToCommonJson()");
+        string trimmedJson = """
+            {
+              x: [
+                1,
+                2,
+                3,
+                [
+                  "a",
+                  "b",
+                  "c",
+                  [ 11, 22, 33]
+                ]
+              ],
+              y: {
+                a: 1111, b: 2222
+              }
+            }
+            """;
+        EasyObjectClassic trimTest;
+
+        trimTest = FromJson(trimmedJson);
+        Echo(trimTest, maxDepth: 1);
+        trimTest.Trim(maxDepth: 1);
+        Echo(trimTest, "(1)");
+
+        trimTest = FromJson(trimmedJson);
+        Echo(trimTest, maxDepth: 2);
+        trimTest.Trim(maxDepth: 2);
+        Echo(trimTest, "(2)");
+
+        trimTest = FromJson(trimmedJson);
+        Echo(trimTest, hideKeys: ["a"]);
+        trimTest.Trim(hideKeys: ["a"]);
+        Echo(trimTest, "(3)");
+
+        string[] myArgs = ["apple", "melon", "peach"];
+        var eoArgs = FromObject(myArgs);
+        var first = eoArgs.Shift();
+        Echo(new { first, eoArgs });
+        myArgs = Array.ConvertAll(eoArgs.ToObject().ToArray() as object[], obj => obj?.ToString() ?? "");
+        Echo(new { myArgs });
+
+        EasyObjectClassic ast;
+        ast = FromJson(BabelOutput.AstJson);
+        ast.Trim(hideKeys: ["loc", "start", "end"], maxDepth: 2);
+        Echo(ast, "ast(1)");
+
+        ast = FromJson(BabelOutput.AstJson);
+        ast.Trim(hideKeys: ["loc", "start", "end"], maxDepth: 3);
+        Echo(ast, "ast(2)");
+
+        var noError = FromJson("\n", ignoreErrors: true);
+        Echo(noError, "noError");
+
+        Log("[END]");
     }
 }
