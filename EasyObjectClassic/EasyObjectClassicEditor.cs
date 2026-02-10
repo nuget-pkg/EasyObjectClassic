@@ -1,9 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 // ReSharper disable once CheckNamespace
 namespace Global
 {
+    using System.Collections.Generic;
+    using System.Dynamic;
     using static EasyObjectClassic;
     internal static class EasyObjectClassicEditor
     {
@@ -75,7 +74,6 @@ namespace Global
                 {
                     TrimHelper(depth + 1, x.list![i], maxDepth, hideKeys);
                 }
-                //return;
             }
             else if (x.IsObject)
             {
@@ -90,10 +88,8 @@ namespace Global
                     }
                     TrimHelper(depth + 1, x.dictionary![key], maxDepth, hideKeys);
                 }
-                //return;
             }
         }
-
         private static void Clear(EasyObjectClassic x)
         {
             if (x == null) return;
@@ -105,6 +101,32 @@ namespace Global
             {
                 x.dictionary!.Clear();
             }
+        }
+        public static dynamic? ExportToExpandoObject(EasyObjectClassic x)
+        {
+            if (x.IsNull) return null;
+            if (x.IsArray)
+            {
+                var result = new List<dynamic?>();
+                var list = x.list!;
+                foreach (var item in list)
+                {
+                    result.Add(ExportToExpandoObject(item));
+                }
+                return result;
+            }
+            else if (x.IsObject)
+            {
+                var result = new ExpandoObject();
+                var dictionary = x.dictionary!;
+                var keys = dictionary.Keys!;
+                foreach (var key in keys)
+                {
+                    (result as IDictionary<string, object?>)[key] = ExportToExpandoObject(dictionary[key]);
+                }
+                return result;
+            }
+            return x.RealData;
         }
 
     }

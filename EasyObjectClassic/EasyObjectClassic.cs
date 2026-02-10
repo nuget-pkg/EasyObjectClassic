@@ -1,4 +1,7 @@
-﻿using System;
+﻿// ReSharper disable once CheckNamespace
+namespace Global;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -6,9 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-// ReSharper disable once CheckNamespace
-namespace Global;
 
 public enum EasyObjectClassicType
 {
@@ -68,7 +68,7 @@ public class EasyObjectClassic :
     IImportFromCommonJson
 {
     public object? RealData /*= null*/;
-    public static readonly bool IsConsoleApplication = HasConsole();
+    //public static readonly bool IsConsoleApplication = HasConsole();
 
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly IParseJson DefaultJsonParser = new CSharpEasyLanguageHandler(numberAsDecimal: true);
@@ -110,14 +110,14 @@ public class EasyObjectClassic :
         return this.ToPrintable();
     }
 
-    public object? ToPlainObject()
-    {
-        return this.ToObject();
-    }
+    //public object? ToPlainObject()
+    //{
+    //    return this.ToObject();
+    //}
 
-    public string ToPrintable()
+    public string ToPrintable(bool noIndent = false)
     {
-        return EasyObjectClassic.ToPrintable(this);
+        return EasyObjectClassic.ToPrintable(this, noIndent: noIndent);
     }
 
     public static EasyObjectClassic Null { get { return new EasyObjectClassic(); } }
@@ -455,9 +455,17 @@ public class EasyObjectClassic :
         }
     }
 
-    public dynamic? ToObject()
+    public dynamic? ToObject(bool asDynamicObject = false)
     {
-        return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
+        //return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
+        if (asDynamicObject)
+        {
+            return this.ExportToDynamicObject();
+        }
+        else
+        {
+            return this.ExportToPlainObject();
+        }
     }
 
     public string ToJson(bool indent = false, bool sortKeys = false)
@@ -467,6 +475,20 @@ public class EasyObjectClassic :
     }
 
 #if USE_WINCONSOLE
+    public static bool HasConsole()
+    {
+        try
+        {
+            // Attempt to get a console property
+            int left = Console.CursorLeft;
+            return true;
+        }
+        catch (IOException)
+        {
+            // If an exception is caught, no console is available
+            return false;
+        }
+    }
     // ReSharper disable once MemberCanBePrivate.Global
     public static void AllocConsole()
     {
@@ -487,15 +509,16 @@ public class EasyObjectClassic :
     }
 #endif
 
-    public static string ToPrintable(object? x, string? title = null)
+    public static string ToPrintable(object? x, string? title = null, bool noIndent = false)
     {
         PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
-        return poc.ToPrintable(ShowDetail, x, title);
+        return poc.ToPrintable(ShowDetail, x, title, noIndent: noIndent);
     }
 
     public static void Echo(
         object? x,
         string? title = null,
+        bool noIndent = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
@@ -509,13 +532,14 @@ public class EasyObjectClassic :
                 hideKeys: hideKeys,
                 always: false);
         }
-        string s = ToPrintable(x, title);
+        string s = ToPrintable(x, title, noIndent: noIndent);
         Console.WriteLine(s);
         System.Diagnostics.Debug.WriteLine(s);
     }
     public static void Log(
         object? x,
         string? title = null,
+        bool noIndent = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
@@ -529,13 +553,14 @@ public class EasyObjectClassic :
                 hideKeys: hideKeys,
                 always: false);
         }
-        string s = ToPrintable(x, title);
+        string s = ToPrintable(x, title, noIndent: noIndent);
         Console.Error.WriteLine("[Log] " + s);
         System.Diagnostics.Debug.WriteLine("[Log] " + s);
     }
     public static void Debug(
         object? x,
         string? title = null,
+        bool noIndent = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
@@ -550,19 +575,20 @@ public class EasyObjectClassic :
                 hideKeys: hideKeys,
                 always: false);
         }
-        string s = ToPrintable(x, title);
+        string s = ToPrintable(x, title, noIndent: noIndent);
         Console.Error.WriteLine("[Debug] " + s);
         System.Diagnostics.Debug.WriteLine("[Debug] " + s);
     }
     public static void Message(
         object? x,
         string? title = null,
+        bool noIndent = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
     {
         if (title == null) title = "Message";
-        string s = ToPrintable(x, title: title);
+        string s = ToPrintable(x, title: title, noIndent: noIndent);
         NativeMethods.MessageBoxW(IntPtr.Zero, s, title, 0);
     }
 
@@ -681,10 +707,14 @@ public class EasyObjectClassic :
         }
     }
 
-    public static string FullName(dynamic x)
+    public static string FullName(dynamic? x)
     {
         if (x is null) return "null";
         string fullName = ((object)x).GetType().FullName!;
+        if (fullName.StartsWith("<>f__AnonymousType"))
+        {
+            return "AnonymousType";
+        }
         return fullName!.Split('`')[0];
     }
 
@@ -716,7 +746,7 @@ public class EasyObjectClassic :
             List<string>? hideKeys = null
         )
     {
-        EasyObjectClassicEditor.Trim(this, maxDepth, hideKeys);
+        EasyObjectClassicEditor.Trim( this, maxDepth, hideKeys );
     }
 
     public EasyObjectClassic Clone(
@@ -735,25 +765,6 @@ public class EasyObjectClassic :
         EasyObjectClassic result = this.list[0];
         this.list.RemoveAt(0);
         return result;
-    }
-
-    public object? ExportToPlainObject()
-    {
-        return this.ToObject();
-    }
-    public static bool HasConsole()
-    {
-        try
-        {
-            // Attempt to get a console property
-            int left = Console.CursorLeft;
-            return true;
-        }
-        catch (IOException)
-        {
-            // If an exception is caught, no console is available
-            return false;
-        }
     }
 
     public void ImportFromPlainObject(object? x)
@@ -778,5 +789,21 @@ public class EasyObjectClassic :
             indent: true,
             sortKeys: false
             );
+    }
+    public object? ExportToPlainObject()
+    {
+        return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
+    }
+    public dynamic? ExportToDynamicObject()
+    {
+        return EasyObjectClassicEditor.ExportToExpandoObject(this);
+    }
+    public static string ObjectToJson(object? x, bool indent = false)
+    {
+        return FromObject(x).ToJson(indent: indent); ;
+    }
+    public static object? ObjectToObject(object? x, bool asDynamicObject = false)
+    {
+        return FromObject(x).ToObject(asDynamicObject: asDynamicObject);
     }
 }
