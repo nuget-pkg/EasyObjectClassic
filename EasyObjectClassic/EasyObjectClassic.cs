@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 public enum EasyObjectClassicType
@@ -71,7 +70,7 @@ public class EasyObjectClassic :
     //public static readonly bool IsConsoleApplication = HasConsole();
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public static readonly IParseJson DefaultJsonParser = new CSharpEasyLanguageHandler(numberAsDecimal: true);
+    public static readonly IParseJson DefaultJsonParser = new CSharpJsonHandlerClassic(numberAsDecimal: true);
     public static IParseJson? JsonParser /*= null*/;
     // ReSharper disable once MemberCanBePrivate.Global
     public static bool DebugOutput /*= false*/;

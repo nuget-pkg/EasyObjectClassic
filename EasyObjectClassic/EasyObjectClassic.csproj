@@ -59,7 +59,7 @@
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="JsoncParser" Version="2026.122.1022.34" />
+		<PackageReference Include="JsoncParserClassic" Version="2026.329.744.49" />
 		<PackageReference Include="PlainObjectInterface" Version="2026.122.1836.32" />
 	</ItemGroup>
 </Project>

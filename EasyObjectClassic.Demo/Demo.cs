@@ -1,12 +1,9 @@
 ﻿using Global;
-//using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-//using Razorvine.Pickle;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 using static Global.EasyObjectClassic;
 
 // ReSharper disable once CheckNamespace
@@ -75,12 +72,9 @@ class Program
     static void Main()
     {
         ShowDetail = true;
-        //AllocConsole();
         Console.WriteLine("(1)");
         EasyObjectClassic eoNull = Null;
         Echo(eoNull.ToJson());
-        ////var poc = new PlainObjectConverter();
-        ////Echo(poc.Stringify(eoNull, indent: true));
         Echo(eoNull.ToPrintable());
         Echo(eoNull);
         Echo(Null);
