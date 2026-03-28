@@ -1,11 +1,10 @@
 ﻿using Global;
-using NUnit.Framework;
+//using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using static Global.EasyObjectClassic;
-
 
 try
 {
@@ -22,7 +21,7 @@ try
     Console.WriteLine("(3)");
     Echo(eo.TypeValue, "eo.TypeValue");
     Console.WriteLine("(4)");
-    Assert.That(eo.TypeValue, Is.EqualTo(@object));
+    EasyObject.AssertEqual(eo.TypeValue, @object);
     Console.WriteLine("(5)");
     EasyObjectClassic a = eo["a"];
     Console.WriteLine("(5.1)");
@@ -37,40 +36,33 @@ try
     Console.WriteLine("(5.2)");
     Console.WriteLine(eo["a"]);
     Console.WriteLine("(6)");
-    Assert.That(eo["a"].Cast<int>(), Is.EqualTo(123));
+    EasyObject.AssertEqual(eo["a"].Cast<int>(), 123);
     Console.WriteLine("(7)");
-    Assert.That(eo.Keys, Is.EqualTo(new List<string> { "a" }));
+    EasyObject.AssertEqual(eo.Keys, new List<string> { "a" });
     Echo(eo[0], "eo[0]");
-    Assert.That(eo[0].TypeValue, Is.EqualTo(@null));
-    Assert.That(eo[0].IsNull, Is.True);
+    EasyObject.AssertEqual(eo[0].TypeValue, @null);
+    EasyObject.AssertTrue(eo[0].IsNull);
     Echo(eo[1], "eo[1]");
-    Assert.That(eo[1].TypeValue, Is.EqualTo(@null));
-    Assert.That(eo[1].IsNull, Is.True);
+    EasyObject.AssertEqual(eo[1].TypeValue, @null);
+    EasyObject.AssertTrue(eo[1].IsNull);
     foreach (var pair in eo.Dynamic)
     {
         Echo(pair, "pair");
     }
     eo = EasyObjectClassic.FromObject(null);
     Echo(eo.TypeValue, "eo.TypeValue");
-    Assert.That(eo.TypeValue, Is.EqualTo(@null));
+    EasyObject.AssertEqual(eo.TypeValue, @null);
     eo["b"] = true;
-    Assert.That(eo["b"].Cast<bool>(), Is.EqualTo(true));
+    EasyObject.AssertEqual(eo["b"].Cast<bool>(), true);
     Echo(eo["b"].TypeValue, "eo.b.TypeValue");
-    Assert.That(eo["b"].TypeValue, Is.EqualTo(@boolean));
+    EasyObject.AssertEqual(eo["b"].TypeValue, @boolean);
     eo[3] = 777;
     Echo(eo[3].Cast<int>());
     Echo(eo.TypeValue, "eo.TypeValue");
-    Assert.That(eo.TypeValue, Is.EqualTo(EasyObjectClassic.array));
-    Assert.That(eo.Count, Is.EqualTo(4));
-    Assert.That(eo[0].TypeValue, Is.EqualTo(@null));
-#if false
-        Assert.That(() => { var n = eo[0].Cast<int>(); },
-            Throws.TypeOf<System.InvalidCastException>()
-            .With.Message.EqualTo("Null オブジェクトを値型に変換することはできません。")
-            );
-#endif
-    //Assert.That((int?)eo[0], Is.EqualTo(null));
-    Assert.That(eo[3].Cast<int>(), Is.EqualTo(777));
+    EasyObject.AssertEqual(eo.TypeValue, EasyObjectClassic.array);
+    EasyObject.AssertEqual(eo.Count, 4);
+    EasyObject.AssertEqual(eo[0].TypeValue, @null);
+    EasyObject.AssertEqual(eo[3].Cast<int>(), 777);
     foreach (var e in eo.Dynamic)
     {
         Echo(e, "e");
@@ -128,46 +120,9 @@ try
     Console.WriteLine($"　{ts}");
     Console.WriteLine($"　{ts.Hours}時間 {ts.Minutes}分 {ts.Seconds}秒 {ts.Milliseconds}ミリ秒");
     Console.WriteLine($"　{sw.ElapsedMilliseconds}ミリ秒");
-    //var list01_txt = File.ReadAllText("assets/list01.txt");
-    //var list01_txt = File.ReadAllText("assets/mydict.txt");
-    //Echo(list01_txt);
-    //var list01_bytes = Convert.FromBase64String(list01_txt);
-    //var unpickler = new Unpickler();
-    //object result = unpickler.loads(list01_bytes);
-    //Echo(result, "result");
-    //var o = new PlainObjectConverter(forceAscii: false).Parse(result);
-    //Echo(o, "o");
-    //var pickler = new Pickler();
-    //var bytes = pickler.dumps(o);
-    //var ox = unpickler.loads(bytes);
-    //Echo(ox, "ox");
-    //var eo_ox = EasyObjectClassic.FromObject(ox);
-    //Echo(eo_ox, "eo_ox");
-    //Echo(eo_ox.ToJson(true, true), "eo_ox.ToJson(true, true)");
     Echo(DateTime.Now);
 
-    string progJson = """
-            #! /usr/bin/env program
-            [11, null, "abc"]
-            """;
-    Echo(EasyObjectClassic.FromJson(progJson));
     Echo(EasyObjectClassic.FromJson(null));
-    var array = EasyObjectClassic.NewArray(1, null, "abc", EasyObjectClassic.FromJson(progJson));
-    Echo(array, "array");
-    var obj = EasyObjectClassic.NewObject("a", 111, "b", EasyObjectClassic.FromJson(progJson));
-    Echo(obj, "obj");
-    // Test newLisp expression
-    //EasyObjectClassic assocList = EasyObjectClassic.FromJson("""
-    //        ( ("a" 123) ("b" true) ("c" false) ("d" nil) )
-    //        """);
-    //Echo(assocList, "assocList");
-    //var member = assocList["a"];
-    //Echo(member, "member");
-    //dynamic assocDyn = assocList;
-    //var member2 = assocDyn["a"];
-    //Echo(member2, "member2");
-    //var member3 = assocDyn.a;
-    //Echo(member3, "member3");
     var exc1 = new Exchangeable1();
     Echo(exc1, "exc1");
     var exc2 = new Exchangeable2();
