@@ -29,6 +29,9 @@
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);USE_POC_CODE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup>
 		<DebugType>full</DebugType>
 	</PropertyGroup>
 	<PropertyGroup>
@@ -56,7 +59,7 @@
 		<PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PackageReference Include="JsoncParser" Version="2026.122.1022.34" />
-	  <PackageReference Include="PlainObjectConverter" Version="2026.211.12.55" />
+		<PackageReference Include="JsoncParser" Version="2026.122.1022.34" />
+		<PackageReference Include="PlainObjectInterface" Version="2026.122.1836.32" />
 	</ItemGroup>
 </Project>

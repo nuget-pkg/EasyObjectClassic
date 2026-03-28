@@ -79,8 +79,8 @@ class Program
         Console.WriteLine("(1)");
         EasyObjectClassic eoNull = Null;
         Echo(eoNull.ToJson());
-        var poc = new PlainObjectConverter();
-        Echo(poc.Stringify(eoNull, indent: true));
+        ////var poc = new PlainObjectConverter();
+        ////Echo(poc.Stringify(eoNull, indent: true));
         Echo(eoNull.ToPrintable());
         Echo(eoNull);
         Echo(Null);
@@ -99,7 +99,7 @@ class Program
         Console.WriteLine("(5.1.1)");
         //Echo(a.ToObject());
         Console.WriteLine("(5.1.1.1)");
-        Echo(poc.Stringify(a, true));
+        ////Echo(poc.Stringify(a, true));
         Console.WriteLine("(5.1.2)");
         Echo(a, "a");
         Console.WriteLine("(5.2)");

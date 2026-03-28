@@ -115,9 +115,9 @@ public class EasyObjectClassic :
     //    return this.ToObject();
     //}
 
-    public string ToPrintable(bool noIndent = false)
+    public string ToPrintable(bool compact = false)
     {
-        return EasyObjectClassic.ToPrintable(this, noIndent: noIndent);
+        return EasyObjectClassic.ToPrintable(this, compact: compact);
     }
 
     public static EasyObjectClassic Null { get { return new EasyObjectClassic(); } }
@@ -509,16 +509,16 @@ public class EasyObjectClassic :
     }
 #endif
 
-    public static string ToPrintable(object? x, string? title = null, bool noIndent = false)
+    public static string ToPrintable(object? x, string? title = null, bool compact = false)
     {
         PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
-        return poc.ToPrintable(ShowDetail, x, title, noIndent: noIndent);
+        return poc.ToPrintable(ShowDetail, x, title, compact: compact);
     }
 
     public static void Echo(
         object? x,
         string? title = null,
-        bool noIndent = false,
+        bool compact = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
@@ -532,14 +532,14 @@ public class EasyObjectClassic :
                 hideKeys: hideKeys,
                 always: false);
         }
-        string s = ToPrintable(x, title, noIndent: noIndent);
+        string s = ToPrintable(x, title, compact: compact);
         Console.WriteLine(s);
         System.Diagnostics.Debug.WriteLine(s);
     }
     public static void Log(
         object? x,
         string? title = null,
-        bool noIndent = false,
+        bool compact = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
@@ -553,14 +553,14 @@ public class EasyObjectClassic :
                 hideKeys: hideKeys,
                 always: false);
         }
-        string s = ToPrintable(x, title, noIndent: noIndent);
+        string s = ToPrintable(x, title, compact: compact);
         Console.Error.WriteLine("[Log] " + s);
         System.Diagnostics.Debug.WriteLine("[Log] " + s);
     }
     public static void Debug(
         object? x,
         string? title = null,
-        bool noIndent = false,
+        bool compact = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
@@ -575,20 +575,20 @@ public class EasyObjectClassic :
                 hideKeys: hideKeys,
                 always: false);
         }
-        string s = ToPrintable(x, title, noIndent: noIndent);
+        string s = ToPrintable(x, title, compact: compact);
         Console.Error.WriteLine("[Debug] " + s);
         System.Diagnostics.Debug.WriteLine("[Debug] " + s);
     }
     public static void Message(
         object? x,
         string? title = null,
-        bool noIndent = false,
+        bool compact = false,
         uint maxDepth = 0,
         List<string>? hideKeys = null
         )
     {
         if (title == null) title = "Message";
-        string s = ToPrintable(x, title: title, noIndent: noIndent);
+        string s = ToPrintable(x, title: title, compact: compact);
         NativeMethods.MessageBoxW(IntPtr.Zero, s, title, 0);
     }
 
