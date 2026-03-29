@@ -67,7 +67,6 @@ public class EasyObjectClassic :
     IImportFromCommonJson
 {
     public object? RealData /*= null*/;
-    //public static readonly bool IsConsoleApplication = HasConsole();
 
     // ReSharper disable once MemberCanBePrivate.Global
     public static readonly IParseJson DefaultJsonParser = new CSharpJsonHandlerClassic(numberAsDecimal: true);
@@ -99,7 +98,7 @@ public class EasyObjectClassic :
     // ReSharper disable once MemberCanBePrivate.Global
     public EasyObjectClassic(object? x)
     {
-        this.RealData = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: false, iConvertParsedResult: new EasyObjectClassicConverter()).Parse(x, numberAsDecimal: true);
+        this.RealData = new PlainObjectConverterClassic(jsonParser: JsonParser, forceAscii: false, iConvertParsedResult: new EasyObjectClassicConverter()).Parse(x, numberAsDecimal: true);
     }
 
     public dynamic Dynamic { get { return this; } }
@@ -108,11 +107,6 @@ public class EasyObjectClassic :
     {
         return this.ToPrintable();
     }
-
-    //public object? ToPlainObject()
-    //{
-    //    return this.ToObject();
-    //}
 
     public string ToPrintable(bool compact = false)
     {
@@ -456,7 +450,6 @@ public class EasyObjectClassic :
 
     public dynamic? ToObject(bool asDynamicObject = false)
     {
-        //return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
         if (asDynamicObject)
         {
             return this.ExportToDynamicObject();
@@ -469,48 +462,13 @@ public class EasyObjectClassic :
 
     public string ToJson(bool indent = false, bool sortKeys = false)
     {
-        PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
+        PlainObjectConverterClassic poc = new PlainObjectConverterClassic(jsonParser: JsonParser, forceAscii: ForceAscii);
         return poc.Stringify(RealData, indent, sortKeys);
     }
 
-#if USE_WINCONSOLE
-    public static bool HasConsole()
-    {
-        try
-        {
-            // Attempt to get a console property
-            int left = Console.CursorLeft;
-            return true;
-        }
-        catch (IOException)
-        {
-            // If an exception is caught, no console is available
-            return false;
-        }
-    }
-    // ReSharper disable once MemberCanBePrivate.Global
-    public static void AllocConsole()
-    {
-        if (IsConsoleApplication) return;
-        WinConsole.Alloc();
-    }
-    // ReSharper disable once MemberCanBePrivate.Global
-    public static void FreeConsole()
-    {
-        if (IsConsoleApplication) return;
-        WinConsole.Free();
-    }
-    public static void ReallocConsole()
-    {
-        if (IsConsoleApplication) return;
-        FreeConsole();
-        AllocConsole();
-    }
-#endif
-
     public static string ToPrintable(object? x, string? title = null, bool compact = false)
     {
-        PlainObjectConverter poc = new PlainObjectConverter(jsonParser: JsonParser, forceAscii: ForceAscii);
+        PlainObjectConverterClassic poc = new PlainObjectConverterClassic(jsonParser: JsonParser, forceAscii: ForceAscii);
         return poc.ToPrintable(ShowDetail, x, title, compact: compact);
     }
 
@@ -745,7 +703,7 @@ public class EasyObjectClassic :
             List<string>? hideKeys = null
         )
     {
-        EasyObjectClassicEditor.Trim( this, maxDepth, hideKeys );
+        EasyObjectClassicEditor.Trim(this, maxDepth, hideKeys);
     }
 
     public EasyObjectClassic Clone(
@@ -791,7 +749,7 @@ public class EasyObjectClassic :
     }
     public object? ExportToPlainObject()
     {
-        return new PlainObjectConverter(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
+        return new PlainObjectConverterClassic(jsonParser: null, forceAscii: ForceAscii).Parse(RealData);
     }
     public dynamic? ExportToDynamicObject()
     {

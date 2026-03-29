@@ -1,5 +1,4 @@
-﻿# if USE_POC_CODE
-namespace Global;
+﻿namespace Global;
 
 using System;
 using System.Collections;
@@ -11,12 +10,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-#if GLOBAL_POC
 public
-#else
-internal
-#endif
-class PlainObjectConverter : IConvertParsedResult {
+class PlainObjectConverterClassic : IConvertParsedResult
+{
     public object? ConvertParsedResult(object? x, string origTypeName) // IConvertParsedResult
     {
         return x;
@@ -24,7 +20,7 @@ class PlainObjectConverter : IConvertParsedResult {
     internal readonly IParseJson? JsonParser;
     private readonly bool _forceAscii;
     private readonly IConvertParsedResult _iConvertParsedResult;
-    public PlainObjectConverter(IParseJson? jsonParser = null, bool forceAscii = false, /*bool removeSurrogatePair = false,*/ IConvertParsedResult? iConvertParsedResult = null) {
+    public PlainObjectConverterClassic(IParseJson? jsonParser = null, bool forceAscii = false, /*bool removeSurrogatePair = false,*/ IConvertParsedResult? iConvertParsedResult = null) {
         JsonParser = jsonParser;
         _forceAscii = forceAscii;
         if (iConvertParsedResult == null) {
@@ -113,7 +109,7 @@ class PlainObjectConverter : IConvertParsedResult {
         if (fullName == null) {
             fullName = FullName(x);
         }
-        PlainObjectConverter op = this;
+        PlainObjectConverterClassic op = this;
         string s = "";
         if (title != null) {
             s = title + ": ";
@@ -268,13 +264,13 @@ class PlainObjectConverter : IConvertParsedResult {
 }
 
 internal class JsonStringBuilder {
-    private readonly PlainObjectConverter _poc;
+    private readonly PlainObjectConverterClassic _poc;
     private readonly bool _forceAscii /*= false*/;
     private readonly bool _indentJson /*= false*/;
     private readonly bool _sortKeys /*= false*/;
     private readonly bool _keyAsSymbol;
     private readonly bool _removeSurrogatePair;
-    public JsonStringBuilder(PlainObjectConverter poc, bool forceAscii, bool indentJson, bool sortKeys, bool keyAsSymbol, bool removeSurrogatePair = false) {
+    public JsonStringBuilder(PlainObjectConverterClassic poc, bool forceAscii, bool indentJson, bool sortKeys, bool keyAsSymbol, bool removeSurrogatePair = false) {
         _poc = poc;
         _forceAscii = forceAscii;
         _indentJson = indentJson;
@@ -363,7 +359,7 @@ internal class JsonStringBuilder {
                 str = str.Replace("{ddbea68e-d93f-4e85-92b5-83b1ace6d50f}", "★");
             }
             if (noQuoteKey) {
-                if (PlainObjectConverter.IsValidSymbolName(str)) {
+                if (PlainObjectConverterClassic.IsValidSymbolName(str)) {
                     sb.Append(str);
                     return;
                 }
@@ -585,4 +581,3 @@ internal class JsonStringBuilder {
         return result;
     }
 }
-#endif

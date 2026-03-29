@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<TargetFrameworks>netstandard2.0;net462;net8.0</TargetFrameworks>
-		<Version>2026.0329.0844.30</Version>
+		<Version>2026.0330.0525.17</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<RootNamespace>EasyObjectClassic</RootNamespace>
@@ -29,7 +29,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 	<PropertyGroup>
-		<DefineConstants>$(DefineConstants);USE_POC_CODE</DefineConstants>
+		<DefineConstants>$(DefineConstants);XYZ</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup>
 		<DebugType>full</DebugType>
@@ -60,6 +60,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="JsoncParserClassic" Version="2026.329.744.49" />
+		<!--<PackageReference Include="PlainObjectInterfaceClassic" Version="2026.330.455.15" />-->
 		<PackageReference Include="PlainObjectInterface" Version="2026.122.1836.32" />
 	</ItemGroup>
 </Project>
