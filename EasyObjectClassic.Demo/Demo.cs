@@ -194,6 +194,9 @@ try
 
     var noError = FromJson("\n", ignoreErrors: true);
     Echo(noError, "noError");
+    
+    var transfered = EasyObjectClassic.FromObject(EasyObject.NewArray(11, 22, 33));
+    Log(transfered, title: "transfered");
 
     Log("[END]");
 }
