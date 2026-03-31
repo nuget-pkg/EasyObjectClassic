@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<LangVersion>latest</LangVersion>
@@ -33,7 +33,7 @@
 		<Reference Include="System.Xml.Linq" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="EasyObject" Version="2026.329.724.30" />
+		<PackageReference Include="EasyObject" Version="2026.329.2338.16" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\EasyObjectClassic\EasyObjectClassic.csproj" />

@@ -1,103 +1,91 @@
-namespace Global {
-    using System.Collections.Generic;
-    using System.Dynamic;
-    using static EasyObjectClassic;
-    internal static class EasyObjectClassicEditor {
-        public static EasyObjectClassic Clone(
-            EasyObjectClassic x,
-            uint maxDepth = 0,
-            List<string>? hideKeys = null,
-            bool always = true
-            ) {
-            if (x == null) return Null;
-            hideKeys = hideKeys ?? new List<string>();
-            if (!always) {
-                if (maxDepth == 0 && hideKeys.Count == 0) {
-                    return x;
+using System.Collections.Generic;
+using System.Dynamic;
+namespace Global;
+using static EasyObjectClassic;
+internal static class EasyObjectClassicEditor {
+    public static EasyObjectClassic Clone(
+        EasyObjectClassic x,
+        uint maxDepth = 0,
+        List<string>? hideKeys = null,
+        bool always = true
+    ) {
+        if (x == null) return Null;
+        hideKeys = hideKeys ?? new List<string>();
+        if (!always)
+            if (maxDepth == 0 && hideKeys.Count == 0)
+                return x;
+        x = FromObject(x);
+        Trim(x, maxDepth, hideKeys);
+        return x;
+    }
+    public static void Trim(
+        EasyObjectClassic x,
+        uint maxDepth = 0,
+        List<string>? hideKeys = null
+    ) {
+        if (x == null) return;
+        hideKeys = hideKeys ?? new List<string>();
+        TrimHelper(1, x, maxDepth, hideKeys);
+    }
+    private static void TrimHelper(
+        uint depth,
+        EasyObjectClassic x,
+        uint maxDepth,
+        List<string> hideKeys
+    ) {
+        if (x == null) return;
+        if (maxDepth > 0)
+            if (depth >= maxDepth) {
+                if (x.IsArray) {
+                    for (var i = 0; i < x.Count; i++) Clear(x.RealList![i]);
+                    //return;
                 }
-            }
-            x = FromObject(x);
-            Trim(x, maxDepth, hideKeys);
-            return x;
-        }
-        public static void Trim(
-            EasyObjectClassic x,
-            uint maxDepth = 0,
-            List<string>? hideKeys = null
-            ) {
-            if (x == null) return;
-            hideKeys = hideKeys ?? new List<string>();
-            TrimHelper(1, x, maxDepth, hideKeys);
-        }
-        private static void TrimHelper(
-            uint depth,
-            EasyObjectClassic x,
-            uint maxDepth,
-            List<string> hideKeys
-            ) {
-            if (x == null) return;
-            if (maxDepth > 0) {
-                if (depth >= maxDepth) {
-                    if (x.IsArray) {
-                        for (int i = 0; i < x.Count; i++) {
-                            Clear(x.list![i]);
-                        }
-                        //return;
-                    } else if (x.IsObject) {
-                        var keys = x.Keys;
-                        for (int i = 0; i < keys.Count; i++) {
-                            string key = keys[i];
-                            Clear(x.dictionary![key]);
-                        }
-                        //return;
+                else if (x.IsObject) {
+                    var keys = x.Keys;
+                    for (var i = 0; i < keys.Count; i++) {
+                        var key = keys[i];
+                        Clear(x.RealDictionary![key]);
                     }
+                    //return;
                 }
             }
-            if (x.IsArray) {
-                for (int i = 0; i < x.Count; i++) {
-                    TrimHelper(depth + 1, x.list![i], maxDepth, hideKeys);
+        if (x.IsArray) {
+            for (var i = 0; i < x.Count; i++) TrimHelper(depth + 1, x.RealList![i], maxDepth, hideKeys);
+        }
+        else if (x.IsObject) {
+            var keys = x.Keys;
+            for (var i = 0; i < keys.Count; i++) {
+                var key = keys[i];
+                if (hideKeys.Contains(key)) {
+                    x.RealDictionary!.Remove(key);
+                    continue;
                 }
-            } else if (x.IsObject) {
-                var keys = x.Keys;
-                for (int i = 0; i < keys.Count; i++) {
-                    string key = keys[i];
-                    if (hideKeys.Contains(key)) {
-                        x.dictionary!.Remove(key);
-                        continue;
-                    }
-                    TrimHelper(depth + 1, x.dictionary![key], maxDepth, hideKeys);
-                }
+                TrimHelper(depth + 1, x.RealDictionary![key], maxDepth, hideKeys);
             }
         }
-        private static void Clear(EasyObjectClassic x) {
-            if (x == null) return;
-            if (x.IsArray) {
-                x.list!.Clear();
-            } else if (x.IsObject) {
-                x.dictionary!.Clear();
-            }
+    }
+    private static void Clear(EasyObjectClassic x) {
+        if (x == null) return;
+        if (x.IsArray)
+            x.RealList!.Clear();
+        else if (x.IsObject) x.RealDictionary!.Clear();
+    }
+    public static dynamic? ExportToExpandoObject(EasyObjectClassic x) {
+        if (x.IsNull) return null;
+        if (x.IsArray) {
+            var result = new List<dynamic?>();
+            var list = x.RealList!;
+            foreach (var item in list) result.Add(ExportToExpandoObject(item));
+            return result;
         }
-        public static dynamic? ExportToExpandoObject(EasyObjectClassic x) {
-            if (x.IsNull) return null;
-            if (x.IsArray) {
-                var result = new List<dynamic?>();
-                var list = x.list!;
-                foreach (var item in list) {
-                    result.Add(ExportToExpandoObject(item));
-                }
-                return result;
-            } else if (x.IsObject) {
-                var result = new ExpandoObject();
-                var dictionary = x.dictionary!;
-                var keys = dictionary.Keys!;
-                foreach (var key in keys) {
-                    (result as IDictionary<string, object?>)[key] = ExportToExpandoObject(dictionary[key]);
-                }
-                return result;
-            }
-            return x.RealData;
+        if (x.IsObject) {
+            var result = new ExpandoObject();
+            var dictionary = x.RealDictionary!;
+            var keys = dictionary.Keys!;
+            foreach (var key in keys)
+                (result as IDictionary<string, object?>)[key] = ExportToExpandoObject(dictionary[key]);
+            return result;
         }
-
+        return x.RealData;
     }
 }
-
